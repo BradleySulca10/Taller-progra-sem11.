@@ -18,7 +18,7 @@ int main(void) {
         printf("5. Mostrar libros\n");
         printf("6. Eliminar libro\n");
         printf("7. Salir\n");
-        printf("Seleccione opción: ");
+        printf("Seleccione opcion: ");
         scanf("%d", &opcion);
         getchar();
 
@@ -49,8 +49,7 @@ int main(void) {
 
             case 3: {
                 char titulo[MAX_TITULO];
-                printf("Título: ");
-                getchar();
+                printf("Titulo: ");
                 fgets(titulo, MAX_TITULO, stdin);
                 titulo[strcspn(titulo, "\n")] = 0;
 
@@ -64,7 +63,7 @@ int main(void) {
                            biblioteca[pos].anio,
                            biblioteca[pos].estado);
                 } else {
-                    printf("No existe ese título.\n");
+                    printf("No existe ese titulo.\n");
                 }
                 break;
             }
@@ -86,7 +85,7 @@ int main(void) {
                 break;
 
             default:
-                printf("Opción inválida.\n");
+                printf("Opcion invalida.\n");
                 break;
         }
 
