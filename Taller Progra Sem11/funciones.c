@@ -40,6 +40,38 @@ static int compararCi(const char *a, const char *b) {
     return 0;
 }
 
+/* Normalizar string (eliminar espacios extras y convertir a minúsculas) */
+static void normalizarString(char *s) {
+    int i = 0, j = 0;
+    int enEspacio = 0;
+    
+    /* Eliminar espacios al inicio */
+    while (s[i] && isspace((unsigned char)s[i])) i++;
+    
+    /* Procesar el resto */
+    while (s[i]) {
+        unsigned char c = (unsigned char)s[i];
+        if (isspace(c)) {
+            if (!enEspacio && j > 0) {
+                s[j++] = ' ';
+                enEspacio = 1;
+            }
+            i++;
+        } else if (isalpha(c)) {
+            s[j++] = tolower(c);
+            enEspacio = 0;
+            i++;
+        } else {
+            i++;
+        }
+    }
+    
+    /* Eliminar espacios al final */
+    while (j > 0 && isspace((unsigned char)s[j - 1])) j--;
+    
+    s[j] = 0;
+}
+
 /* ----------------- FUNCIONES PRINCIPALES ----------------- */
 
 void inicializarBiblioteca(Libro biblioteca[], int *contador) {
@@ -55,9 +87,14 @@ int buscarLibroPorID(const Libro biblioteca[], int contador, int idBuscado) {
 }
 
 int buscarLibroPorTitulo(const Libro biblioteca[], int contador, const char *tituloBuscado) {
+    char tituloBuscadoNorm[MAX_TITULO];
+    strcpy(tituloBuscadoNorm, tituloBuscado);
+    normalizarString(tituloBuscadoNorm);
+    
     for (int i = 0; i < contador; i++) {
-        if (compararCi(biblioteca[i].titulo, tituloBuscado) == 0)
+        if (strcmp(biblioteca[i].titulo, tituloBuscadoNorm) == 0) {
             return i;
+        }
     }
     return -1;
 }
@@ -73,11 +110,11 @@ void agregarLibro(Libro biblioteca[], int *contador) {
 
     /* ----------- VALIDAR ID ----------- */
     do {
-        printf("ID (solo números positivos): ");
+        printf("ID (solo numeros positivos): ");
         leerLinea(buffer, sizeof(buffer));
 
         if (!soloNumeros(buffer)) {
-            printf("Error: solo números.\n");
+            printf("Error: solo nmeros.\n");
             continue;
         }
 
@@ -97,14 +134,17 @@ void agregarLibro(Libro biblioteca[], int *contador) {
 
     /* ----------- TÍTULO ----------- */
     do {
-        printf("Título: ");
+        printf("Titulo: ");
         leerLinea(nuevo.titulo, MAX_TITULO);
+        
+        /* Normalizar título para búsqueda consistente */
+        normalizarString(nuevo.titulo);
 
         if (!soloLetras(nuevo.titulo)) {
             printf("Error: solo letras.\n");
         }
     } while (!soloLetras(nuevo.titulo));
-
+    
     /* ----------- AUTOR ----------- */
     do {
         printf("Autor: ");
@@ -118,17 +158,17 @@ void agregarLibro(Libro biblioteca[], int *contador) {
     /* ----------- AÑO ----------- */
     int anioTemp;
     do {
-        printf("Año de publicación (1000 - 2025): ");
+        printf("Anio de publicacion (1000 - 2025): ");
         leerLinea(buffer, sizeof(buffer));
 
         if (!soloNumeros(buffer)) {
-            printf("Error: ingrese solo números.\n");
+            printf("Error: ingrese solo numeros.\n");
             continue;
         }
 
         anioTemp = atoi(buffer);
         if (anioTemp < 1000 || anioTemp > 2025) {
-            printf("Error: año fuera de rango.\n");
+            printf("Error: anio fuera de rango.\n");
             continue;
         }
 
@@ -153,7 +193,7 @@ void mostrarLibros(const Libro biblioteca[], int contador) {
     }
 
     printf("\n%-4s | %-6s | %-30s | %-20s | %-6s | %s\n",
-           "Pos", "ID", "Título", "Autor", "Año", "Estado");
+           "Pos", "ID", "Titulo", "Autor", "Anio", "Estado");
 
     printf("-------------------------------------------------------------------------------\n");
 
@@ -182,13 +222,13 @@ void actualizarEstado(Libro biblioteca[], int contador) {
         leerLinea(aux, sizeof(aux));
 
         if (!soloNumeros(aux)) {
-            printf("Error: solo números.\n");
+            printf("Error: solo numeros.\n");
             continue;
         }
 
         id = atoi(aux);
         if (id <= 0) {
-            printf("Error: ID inválido.\n");
+            printf("Error: ID invalido.\n");
             continue;
         }
 
@@ -223,13 +263,13 @@ void eliminarLibro(Libro biblioteca[], int *contador) {
         leerLinea(buffer, sizeof(buffer));
 
         if (!soloNumeros(buffer)) {
-            printf("Error: solo números.\n");
+            printf("Error: solo numeros.\n");
             continue;
         }
 
         id = atoi(buffer);
         if (id <= 0) {
-            printf("Error: ID inválido.\n");
+            printf("Error: ID invalido.\n");
             continue;
         }
 
